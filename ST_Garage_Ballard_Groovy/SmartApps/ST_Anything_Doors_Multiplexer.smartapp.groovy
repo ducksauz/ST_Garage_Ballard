@@ -22,12 +22,12 @@
  *    2016-08-07  John Duksta    Pared down for just a single garage door
  *
  */
- 
+
 definition(
     name: "ST_Ballard_Garage Doors Multiplexer",
     namespace: "ducksauz",
     author: "John Duksta",
-    description: "Connects single Arduino with multiple DoorControl and ContactSensor devices to their virtual device counterparts.",
+    description: "Connects single Arduino with a DoorControl device and a ContactSensor device to their virtual device counterparts.",
     category: "My Apps",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
@@ -35,24 +35,12 @@ definition(
 
 preferences {
 	section("Select the Garage Doors (Virtual Door Control devices)") {
-		input "leftdoor", title: "Left Garage Door", "capability.doorControl"
-		input "rightdoor", title: "Right Garage Door", "capability.doorControl"
-	}
-
-	section("Select the House Doors (Virtual Contact Sensor devices)") {
-		input "frontdoor", title: "Virtual Contact Sensor for Front Door", "capability.contactSensor"
-		input "backdoor", title: "Virtual Contact Sensor for Back Door", "capability.contactSensor"
-		input "kitchendoor", title: "Virtual Contact Sensor for Kitchen Door", "capability.contactSensor"
-		input "garagesidedoor", title: "Virtual Contact Sensor for Garage Side Door", "capability.contactSensor"
-	}
-
-	section("Select the Virtual Temperature/Humidity devices") {
-		input "temphumid_1", title: "1st Temp-Humidity Sensor", "capability.temperatureMeasurement", required: false
+		input "garagedoor", title: "Left Garage Door", "capability.doorControl"
 	}
 
 	section("Select the Arduino ST_Anything_Doors device") {
 		input "arduino", "capability.contactSensor"
-    }    
+    }
 }
 
 def installed() {
@@ -68,192 +56,50 @@ def updated() {
 
 def subscribe() {
 
-    subscribe(arduino, "leftDoor.open", leftDoorOpen)
-    subscribe(arduino, "leftDoor.opening", leftDoorOpening)
-    subscribe(arduino, "leftDoor.closed", leftDoorClosed)
-    subscribe(arduino, "leftDoor.closing", leftDoorClosing)
-    subscribe(leftdoor, "buttonPress.true", leftDoorPushButton)
-    
-    subscribe(arduino, "rightDoor.open", rightDoorOpen)
-    subscribe(arduino, "rightDoor.opening", rightDoorOpening)
-    subscribe(arduino, "rightDoor.closed", rightDoorClosed)
-    subscribe(arduino, "rightDoor.closing", rightDoorClosing)
-    subscribe(rightdoor, "buttonPress.true", rightDoorPushButton)
-    
-    subscribe(arduino, "frontDoor.open", frontDoorOpen)
-    subscribe(arduino, "frontDoor.closed", frontDoorClosed)
-    
-    subscribe(arduino, "backDoor.open", backDoorOpen)
-    subscribe(arduino, "backDoor.closed", backDoorClosed)
-
-    subscribe(arduino, "kitchenDoor.open", kitchenDoorOpen)
-    subscribe(arduino, "kitchenDoor.closed", kitchenDoorClosed)
-    
-    subscribe(arduino, "garagesideDoor.open", garagesideDoorOpen)
-    subscribe(arduino, "garagesideDoor.closed", garagesideDoorClosed)
-
-	subscribe(arduino, "temperature", temphumid_1_UpdateTemp)
-   	subscribe(arduino, "humidity", temphumid_1_UpdateHumid)
+    subscribe(arduino, "garageDoor.open", garageDoorOpen)
+    subscribe(arduino, "garageDoor.opening", garageDoorOpening)
+    subscribe(arduino, "garageDoor.closed", garageDoorClosed)
+    subscribe(arduino, "garageDoor.closing", garageDoorClosing)
+    subscribe(garagedoor, "buttonPress.true", garageDoorPushButton)
 }
 
-// --- Left Garage Door --- 
-def leftDoorOpen(evt)
+// --- Garage Door ---
+def garageDoorOpen(evt)
 {
-    if (leftdoor.currentValue("contact") != "open") {
+    if (garagedoor.currentValue("contact") != "open") {
     	log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	leftdoor.open()
+    	garagedoor.open()
 	}
 }
 
-def leftDoorOpening(evt)
+def garageDoorOpening(evt)
 {
-    if (leftdoor.currentValue("contact") != "opening") {
+    if (garagedoor.currentValue("contact") != "opening") {
 	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	leftdoor.opening()
-	}    
-}
-
-def leftDoorClosing(evt)
-{
-    if (leftdoor.currentValue("contact") != "closing") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	leftdoor.closing()
+    	garagedoor.opening()
 	}
 }
 
-def leftDoorClosed(evt)
+def garageDoorClosing(evt)
 {
-    if (leftdoor.currentValue("contact") != "closed") {
+    if (garagedoor.currentValue("contact") != "closing") {
 	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	leftdoor.close()
+    	garagedoor.closing()
 	}
-}    
+}
 
-def leftDoorPushButton(evt)
+def garageDoorClosed(evt)
+{
+    if (garagedoor.currentValue("contact") != "closed") {
+	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
+    	garagedoor.close()
+	}
+}
+
+def garageDoorPushButton(evt)
 {
     log.debug "virtualGarageDoor($evt.name: $evt.value: $evt.deviceId)"
     arduino.pushLeft()
-}
-
-// --- Right Garage Door --- 
-def rightDoorOpen(evt)
-{
-    if (rightdoor.currentValue("contact") != "open") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-		rightdoor.open()
-	}
-}
-
-def rightDoorOpening(evt)
-{
-    if (rightdoor.currentValue("contact") != "opening") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	rightdoor.opening()
-	}    
-}
-
-def rightDoorClosing(evt)
-{
-    if (rightdoor.currentValue("contact") != "closing") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	rightdoor.closing()
-	}
-}
-
-def rightDoorClosed(evt)
-{
-    if (rightdoor.currentValue("contact") != "closed") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	rightdoor.close()
-	}
-}
-
-def rightDoorPushButton(evt)
-{
-    log.debug "virtualGarageDoor($evt.name: $evt.value: $evt.deviceId)"
-    arduino.pushRight()
-}
-
-// --- Front Door --- 
-def frontDoorOpen(evt)
-{
-    if (frontdoor.currentValue("contact") != "open") {
-    	log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	frontdoor.openme()
-    }
-}
-
-def frontDoorClosed(evt)
-{
-    if (frontdoor.currentValue("contact") != "closed") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	frontdoor.closeme()
-    }
-}
-
-// --- back Door --- 
-def backDoorOpen(evt)
-{
-    if (backdoor.currentValue("contact") != "open") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	backdoor.openme()
-    }
-}
-
-def backDoorClosed(evt)
-{
-    if (backdoor.currentValue("contact") != "closed") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	backdoor.closeme()
-	}
-}
-
-// --- Kitchen Door --- 
-def kitchenDoorOpen(evt)
-{
-    if (kitchendoor.currentValue("contact") != "open") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	kitchendoor.openme()
-	}
-}
-
-def kitchenDoorClosed(evt)
-{
-    if (kitchendoor.currentValue("contact") != "closed") {
-		log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-    	kitchendoor.closeme()
-	}
-}
-
-
-// --- Garage Side Door --- 
-def garagesideDoorOpen(evt)
-{
-    if (garagesidedoor.currentValue("contact") != "open") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
- 	   garagesidedoor.openme()
-	}
-}
-
-def garagesideDoorClosed(evt)
-{
-    if (garagesidedoor.currentValue("contact") != "closed") {
-	    log.debug "arduinoevent($evt.name: $evt.value: $evt.deviceId)"
-	    garagesidedoor.closeme()
-	}
-}
-
-// --- Temperature/Humidity ---
-def temphumid_1_UpdateTemp(evt)
-{
-    log.debug "temperature: $evt.value, $evt"
-    temphumid_1.updateTemperature(evt.value)
-}
-
-def temphumid_1_UpdateHumid(evt)
-{
-    log.debug "humidity: $evt.value, $evt"
-    temphumid_1.updateHumidity(evt.value)
 }
 
 def initialize() {
