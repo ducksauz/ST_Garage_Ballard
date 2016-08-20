@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 //******************************************************************************************
 //  File: ST_Anything_Doors.ino
 //  Authors: Dan G Ogorchock & Daniel J Ogorchock (Father and Son)
