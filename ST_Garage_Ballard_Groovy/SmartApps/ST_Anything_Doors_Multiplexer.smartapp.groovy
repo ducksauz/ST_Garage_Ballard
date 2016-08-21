@@ -35,7 +35,7 @@ definition(
 
 preferences {
 	section("Select the Garage Doors (Virtual Door Control devices)") {
-		input "garagedoor", title: "Left Garage Door", "capability.doorControl"
+		input "garagedoor", title: "Garage Door", "capability.doorControl"
 	}
 
 	section("Select the Arduino ST_Anything_Doors device") {
@@ -99,7 +99,7 @@ def garageDoorClosed(evt)
 def garageDoorPushButton(evt)
 {
     log.debug "virtualGarageDoor($evt.name: $evt.value: $evt.deviceId)"
-    arduino.pushLeft()
+    arduino.push()
 }
 
 def initialize() {

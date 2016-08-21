@@ -26,9 +26,7 @@ metadata {
 	definition (name: "ST_Garage_Ballard", namespace: "ducksauz", author: "John Duksta") {
 		capability "Contact Sensor"
 		capability "Sensor"
-
 		attribute "garageDoor", "string"
-
 		command "push"
 	}
 
@@ -43,7 +41,7 @@ metadata {
 
 	// tile definitions
 	tiles {
-		standardTile("Garage Door", "device.garageDoor", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true) {
+		standardTile("garageDoor", "device.garageDoor", width: 1, height: 1, canChangeIcon: true, canChangeBackground: true) {
 			state "closed", label: 'Closed', action: "push", icon: "st.doors.garage.garage-closed", backgroundColor: "#79b821", nextState: "closed"
             state "open", label: 'Open', action: "push", icon: "st.doors.garage.garage-open", backgroundColor: "#ffa81e", nextState: "open"
             state "opening", label: 'Opening', action: "push", icon: "st.doors.garage.garage-opening", backgroundColor: "89C2E8", nextState: "opening"
