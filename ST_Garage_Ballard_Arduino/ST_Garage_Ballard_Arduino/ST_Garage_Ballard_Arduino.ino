@@ -84,7 +84,7 @@
 #define PIN_6_RESERVED               6  //reserved by ThingShield (possible future use?)
 
 //Garage Door Pins
-#define PIN_RELAY_GARAGE_DOOR    5
+#define PIN_RELAY_GARAGE_DOOR    10
 #define PIN_CONTACT_GARAGE_DOOR  9
 
 //******************************************************************************************
@@ -106,7 +106,7 @@ void setup()
   //******************************************************************************************
 
   //Interrupt Sensors
-  static st::IS_DoorControl sensor3(F("garageDoor"), PIN_CONTACT_GARAGE_DOOR, LOW, true, PIN_RELAY_GARAGE_DOOR, LOW, true, 1000);
+  static st::IS_DoorControl sensor3(F("garageDoor"), PIN_CONTACT_GARAGE_DOOR, LOW, true, PIN_RELAY_GARAGE_DOOR, LOW, false, 1000);
 
 
   //*****************************************************************************
